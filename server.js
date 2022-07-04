@@ -14,9 +14,25 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 9001;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 
 app.get("/", (req, res) => {
   res.status(201).send("Server is ready to use");
+});
+
+app.get("/questions", (req, res) => {
+  pool
+    .query(
+      `select * from questions`
+    )
+    .then((result) => res.json(result.rows))
+    .catch((error) => res.json(error));
+});
+
+app.get("/answers", (req, res) => {
+  pool
+    .query(`select * from answers`)
+    .then((result) => res.json(result.rows))
+    .catch((error) => res.json(error));
 });
