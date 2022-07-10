@@ -21,12 +21,30 @@ app.get("/", (req, res) => {
   res.status(201).send("Server is ready to use");
 });
 
-app.get("/questions", (req, res) => {
+app.get("/lessons", (req, res) => {
+  pool
+    .query(`select * from lessons`)
+    .then((result) => res.json(result.rows))
+    .catch((error) => res.json(error));
+});
+
+
+app.get("/questions/difficulty/:difficulty_type", (req, res) => {
+  const difficulty = req.params.difficulty_type;
+  console.log(difficulty);
   pool
     .query(
-      `select * from questions`
+      `select questions.*, difficulty.type as diff_type 
+      from questions 
+      inner join exams on exams.id = exam_id 
+      inner join difficulty on difficulty.id = difficulty_id
+      where difficulty_id = $1`,
+      [difficulty]
     )
-    .then((result) => res.json(result.rows))
+    .then((result) => {
+      console.table("table:", result.rows);
+      res.json(result.rows);
+    })
     .catch((error) => res.json(error));
 });
 
@@ -36,3 +54,5 @@ app.get("/answers", (req, res) => {
     .then((result) => res.json(result.rows))
     .catch((error) => res.json(error));
 });
+
+
