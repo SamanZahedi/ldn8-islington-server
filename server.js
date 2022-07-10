@@ -55,4 +55,59 @@ app.get("/answers", (req, res) => {
     .catch((error) => res.json(error));
 });
 
+//Lessons
+app.get("/lessons", (req, res) => {
+  pool
+    .query(`select * from lessons`)
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
+});
 
+app.get("/lessons/:lessonId", (req, res) => {
+  const id = req.params.lessonId;
+  pool
+    .query(`select * from lessons where id = $1`, [id])
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
+});
+
+app.post("/lessons", (req, res) => {
+  const { title, imgurl, intro, summary, content, url, rating } = req.body;
+  pool
+    .query(
+      `Insert Into lessons (title, imgurl, intro, summary, content, url, rating) 
+        Values ($1, $2, $3, $4, $5, $6, $7)`,
+      [title, imgurl, intro, summary, content, url, rating]
+    )
+    .then(() => res.status(200).send("Lesson created."))
+    .catch((error) => res.status(500).json(error));
+});
+
+app.put("/lessons/:lessonId", (req, res) => {
+  const id = req.params.lessonId;
+  const { title, imgurl, intro, summary, content, url, rating } = req.body;
+  pool
+    .query(
+      `Update lessons Set title = $1, imgurl= $2, intro= $3, summary = $4, content = $5, url = $6, rating = $7 
+        Where id = $8`,
+      [title, imgurl, intro, summary, content, url, rating , id]
+    )
+    .then(() => res.status(200).send("Lesson updated."))
+    .catch((error) => res.status(500).json(error));
+});
+
+app.delete("/lessons/:lessonId", (req, res) => {
+  const id = req.params.lessonId;
+  pool
+    .query(`select * from lessons where id = $1`, [id])
+    .then((result) => {
+      if(result.rows.length>0){
+        pool
+          .query(`Delete from lessons where id = $1`, [id])
+          .then(() => res.status(200).send("Lesson deleted."))
+          .catch((error) => res.status(500).json(error));
+           } else {
+             res.status(200).send("Lesson does not exist.")  
+           }})
+    .catch((error) => res.status(500).json(error));
+});
