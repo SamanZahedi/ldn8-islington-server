@@ -21,11 +21,20 @@ app.get("/", (req, res) => {
   res.status(201).send("Server is ready to use");
 });
 
-app.get("/lessons", (req, res) => {
+//Questions
+app.get("/questions", (req, res) => {
   pool
-    .query(`select * from lessons`)
-    .then((result) => res.json(result.rows))
-    .catch((error) => res.json(error));
+    .query(`select * from questions`)
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
+});
+
+app.get("/questions/:questionId", (req, res) => {
+  const id = req.params.questionId;
+  pool
+    .query(`select * from questions where id = $1`, [id])
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
 });
 
 
@@ -48,12 +57,27 @@ app.get("/questions/difficulty/:difficulty_type", (req, res) => {
     .catch((error) => res.json(error));
 });
 
-app.get("/answers", (req, res) => {
+
+app.get("/questions/:questionId/answers", (req, res) => {
+  const id = req.params.questionId;
   pool
-    .query(`select * from answers`)
-    .then((result) => res.json(result.rows))
-    .catch((error) => res.json(error));
+    .query(`select * from answers where question_id = $1`, [id])
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
 });
+
+app.post("/questions", (req, res) => {
+  const { exam_id, image, question } = req.body;
+  pool
+    .query(
+      `Insert Into questions (exam_id, image, question) 
+        Values ($1, $2, $3)`,
+      [exam_id, image, question]
+    )
+    .then(() => res.status(200).send("Question created."))
+    .catch((error) => res.status(500).json(error));
+});
+
 
 //Lessons
 app.get("/lessons", (req, res) => {
@@ -109,5 +133,21 @@ app.delete("/lessons/:lessonId", (req, res) => {
            } else {
              res.status(200).send("Lesson does not exist.")  
            }})
+    .catch((error) => res.status(500).json(error));
+});
+
+//Answers
+app.get("/answers", (req, res) => {
+  pool
+    .query(`select * from answers`)
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
+});
+
+app.get("/answers/:answerId", (req, res) => {
+  const id = req.params.answerId;
+  pool
+    .query(`select * from answers where id = $1`, [id])
+    .then((result) => res.status(200).json(result.rows))
     .catch((error) => res.status(500).json(error));
 });
