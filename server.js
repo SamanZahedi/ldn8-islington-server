@@ -124,12 +124,12 @@ app.get("/lessons/:lessonId", (req, res) => {
 });
 
 app.post("/lessons", (req, res) => {
-  const { title, imgurl, intro, summary, content, url, rating } = req.body;
+  const { title, img_url, intro, summary, content, video_url } = req.body;
   pool
     .query(
-      `Insert Into lessons (title, imgurl, intro, summary, content, url, rating) 
-        Values ($1, $2, $3, $4, $5, $6, $7)`,
-      [title, imgurl, intro, summary, content, url, rating]
+      `Insert Into lessons (title, img_url, intro, summary, content, video_url) 
+        Values ($1, $2, $3, $4, $5, $6)`,
+      [title, img_url, intro, summary, content, video_url]
     )
     .then(() => res.status(200).send("Lesson created."))
     .catch((error) => res.status(500).json(error));
@@ -137,12 +137,12 @@ app.post("/lessons", (req, res) => {
 
 app.put("/lessons/:lessonId", (req, res) => {
   const id = req.params.lessonId;
-  const { title, imgurl, intro, summary, content, url, rating } = req.body;
+  const { title, img_url, intro, summary, content, video_url } = req.body;
   pool
     .query(
-      `Update lessons Set title = $1, imgurl= $2, intro= $3, summary = $4, content = $5, url = $6, rating = $7 
-        Where id = $8`,
-      [title, imgurl, intro, summary, content, url, rating , id]
+      `Update lessons Set title = $1, img_url= $2, intro= $3, summary = $4, content = $5, video_url = $6
+        Where id = $7`,
+      [title, img_url, intro, summary, content, video_url, id]
     )
     .then(() => res.status(200).send("Lesson updated."))
     .catch((error) => res.status(500).json(error));
