@@ -40,23 +40,51 @@ app.get("/questions/:questionId", (req, res) => {
 
 app.get("/questions/difficulty/:difficulty_type", (req, res) => {
   const difficulty = req.params.difficulty_type;
-  console.log(difficulty);
+
   pool
     .query(
-      `select questions.*, difficulty.type as diff_type 
-      from questions 
-      inner join exams on exams.id = exam_id 
-      inner join difficulty on difficulty.id = difficulty_id
-      where difficulty_id = $1`,
+      `
+select questions.id, question, difficulty, answers.id as answer_id, answer, is_correct
+From questions
+Inner join answers on question_id = questions.id
+  inner join exams on exams.id = exam_id
+Inner join difficulty on difficulty.id = difficulty_id
+Where difficulty_id = $1`,
       [difficulty]
     )
     .then((result) => {
-      console.table("table:", result.rows);
-      res.json(result.rows);
-    })
-    .catch((error) => res.json(error));
+      const arr = [];
+      let obj = {};
+      let q_id_old = 0;
+      result.rows.map((el) => {
+        if (el.id != q_id_old) {
+          q_id_old = el.id;
+          // console.log(obj);
+          if (Object.keys(obj).length !== 0) {
+            arr.push(obj);
+          }
+          obj = {
+            id: el.id,
+            question: el.question,
+          };
+          obj["answers"] = [];
+          obj.answers.push({
+            id: el.answer_id,
+            answer: el.answer,
+            is_correct: el.is_correct,
+          });
+        } else {
+          obj.answers.push({
+            id: el.answer_id,
+            answer: el.answer,
+            is_correct: el.is_correct,
+          });
+        }
+      });
+      arr.push(obj);
+      res.json(arr);
+    });
 });
-
 
 app.get("/questions/:questionId/answers", (req, res) => {
   const id = req.params.questionId;
