@@ -18,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 9001;
+const port = process.env.PORT || 7007;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 // http.createServer(app).listen(app.get(port), function () {
 //   console.log("Express server listening on port " + app.get(port));
@@ -105,7 +105,7 @@ select questions.id, image, question,  answers.id as answer_id, answer, is_corre
 From questions
 Inner join answers on question_id = questions.id
 Where lesson_id = $1`,
-      [lessonId]
+      [id]
     )
     .then((result) => {
       const arr = [];
@@ -153,12 +153,12 @@ app.get("/questions/:questionId/answers", (req, res) => {
 });
 
 app.post("/questions", (req, res) => {
-  const { exam_id, image, question } = req.body;
+  const { lesson_id, image, question } = req.body;
   pool
     .query(
-      `Insert Into questions (exam_id, image, question) 
+      `Insert Into questions (lesson_id, image, question) 
         Values ($1, $2, $3)`,
-      [exam_id, image, question]
+      [lesson_id, image, question]
     )
     .then(() => res.status(200).send("Question created."))
     .catch((error) => res.status(500).json(error));
