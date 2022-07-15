@@ -18,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 7007;
+const port = process.env.PORT || 6714;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 // http.createServer(app).listen(app.get(port), function () {
 //   console.log("Express server listening on port " + app.get(port));
@@ -105,7 +105,7 @@ select questions.id, image, question,  answers.id as answer_id, answer, is_corre
 From questions
 Inner join answers on question_id = questions.id
 Where lesson_id = $1`,
-      [id]
+      [lessonId]
     )
     .then((result) => {
       const arr = [];
