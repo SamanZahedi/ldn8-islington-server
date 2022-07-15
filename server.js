@@ -1,8 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+// var http = require("http");
+// var enforce = require("express-sslify");
 
 const app = express();
+// app.use(enforce.HTTPS({ trustProtoHeader: true }));
+
 
 app.use(express.json());
 app.use(cors());
@@ -16,6 +20,10 @@ const pool = new Pool({
 
 const port = process.env.PORT || 9001;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
+// http.createServer(app).listen(app.get(port), function () {
+//   console.log("Express server listening on port " + app.get(port));
+// });
+
 
 app.get("/", (req, res) => {
   res.status(201).send("Server is ready to use");
