@@ -237,3 +237,16 @@ app.get("/answers/:answerId", (req, res) => {
     .then((result) => res.status(200).json(result.rows))
     .catch((error) => res.status(500).json(error));
 });
+
+
+app.post("/answers", (req, res) => {
+  const { question_id, answer, is_correct } = req.body;
+  pool
+    .query(
+      `Insert Into answers (question_id, answer, is_correct) 
+        Values ($1, $2, $3)`,
+      [question_id, answer, is_correct]
+    )
+    .then(() => res.status(200).send("Answer created."))
+    .catch((error) => res.status(500).json(error));
+});
