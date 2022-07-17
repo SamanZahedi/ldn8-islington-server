@@ -152,17 +152,17 @@ app.get("/questions/:questionId/answers", (req, res) => {
     .catch((error) => res.status(500).json(error));
 });
 
-app.post("/questions", (req, res) => {
-  const { lesson_id, image, question } = req.body;
-  pool
-    .query(
-      `Insert Into questions (lesson_id, image, question) 
-        Values ($1, $2, $3)`,
-      [lesson_id, image, question]
-    )
-    .then(() => res.status(200).send("Question created."))
-    .catch((error) => res.status(500).json(error));
-});
+// app.post("/questions", (req, res) => {
+//   const { lesson_id, image, question } = req.body;
+//   pool
+//     .query(
+//       `Insert Into questions (lesson_id, image, question) 
+//         Values ($1, $2, $3)`,
+//       [lesson_id, image, question]
+//     )
+//     .then(() => res.status(200).send("Question created."))
+//     .catch((error) => res.status(500).json(error));
+// });
 
 
 //Lessons
@@ -239,14 +239,36 @@ app.get("/answers/:answerId", (req, res) => {
 });
 
 
-app.post("/answers", (req, res) => {
-  const { question_id, answer, is_correct } = req.body;
+// app.post("/answers", (req, res) => {
+//   const { question_id, answer, is_correct } = req.body;
+//   pool
+//     .query(
+//       `Insert Into answers (question_id, answer, is_correct) 
+//         Values ($1, $2, $3)`,
+//       [question_id, answer, is_correct]
+//     )
+//     .then(() => res.status(200).send("Answer created."))
+//     .catch((error) => res.status(500).json(error));
+// });
+
+// Question and asnwers all in one 
+app.post("/questions", (req, res) => {
+  const { lesson_id, image, question } = req.body;
+  const params = [lesson_id, image, question];
+  req.body.answers.map((answer) => {
+    params.push(answer.answer);
+    params.push(answer.is_correct);
+  });
+  console.log(params);
   pool
     .query(
-      `Insert Into answers (question_id, answer, is_correct) 
-        Values ($1, $2, $3)`,
-      [question_id, answer, is_correct]
+      `with q as (Insert Into questions (lesson_id, image, question) 
+		Values ($1, $2,$3) returning *),
+		answer1 as ( Insert Into answers (answer, is_correct,question_id) 
+			Values ($4, $5,(select id from q)), ($6, $7,(select id from q)) ,($8, $9,(select id from q)) ,($10, $11,(select id from q)) returning *)
+select * from q`,
+      params
     )
-    .then(() => res.status(200).send("Answer created."))
+    .then(() => res.status(200).send("Question and asnwers created."))
     .catch((error) => res.status(500).json(error));
 });
