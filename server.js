@@ -18,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 6714;
+const port = process.env.PORT || 9003;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 // http.createServer(app).listen(app.get(port), function () {
 //   console.log("Express server listening on port " + app.get(port));
@@ -144,13 +144,13 @@ Where lesson_id = $1`,
 });
 
 
-app.get("/questions/:questionId/answers", (req, res) => {
-  const id = req.params.questionId;
-  pool
-    .query(`select * from answers where question_id = $1`, [id])
-    .then((result) => res.status(200).json(result.rows))
-    .catch((error) => res.status(500).json(error));
-});
+// app.get("/questions/:questionId/answers", (req, res) => {
+//   const id = req.params.questionId;
+//   pool
+//     .query(`select * from answers where question_id = $1`, [id])
+//     .then((result) => res.status(200).json(result.rows))
+//     .catch((error) => res.status(500).json(error));
+// });
 
 // app.post("/questions", (req, res) => {
 //   const { lesson_id, image, question } = req.body;
@@ -168,7 +168,7 @@ app.get("/questions/:questionId/answers", (req, res) => {
 //Lessons
 app.get("/lessons", (req, res) => {
   pool
-    .query(`select * from lessons`)
+    .query(`select * from lessons order by id`)
     .then((result) => res.status(200).json(result.rows))
     .catch((error) => res.status(500).json(error));
 });
@@ -263,7 +263,7 @@ app.post("/questions", (req, res) => {
   pool
     .query(
       `with q as (Insert Into questions (lesson_id, image, question) 
-		Values ($1, $2,$3) returning *),
+		Values ($1, $2, $3) returning *),
 		answer1 as ( Insert Into answers (answer, is_correct,question_id) 
 			Values ($4, $5,(select id from q)), ($6, $7,(select id from q)) ,($8, $9,(select id from q)) ,($10, $11,(select id from q)) returning *)
 select * from q`,
