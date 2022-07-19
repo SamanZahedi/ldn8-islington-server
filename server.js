@@ -272,3 +272,18 @@ select * from q`,
     .then(() => res.status(200).send("Question and asnwers created."))
     .catch((error) => res.status(500).json(error));
 });
+
+
+// DELETE questions and answers
+app.delete("/questions/:questionId", function (req, res) {
+  const questionId = req.params.questionId;
+
+  pool
+    .query("DELETE FROM answers WHERE question_id=$1", [questionId])
+    .then(() => pool.query("DELETE FROM questions WHERE id=$1", [questionId]))
+    .then(() => res.send(`question ${questionId} deleted!`))
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json(error);
+    });
+});
