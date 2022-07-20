@@ -291,30 +291,27 @@ app.delete("/questions/:questionId", function (req, res) {
 
   app.put("/questions", function (req, res) {
     let { lesson_id, image, question, id } = req.body;
-    let params1 = [lesson_id, question, image, id];
-        let params2 = [
-      req.body.answers[0].answer,
-      req.body.answers[0].is_correct,
-      req.body.answers[0].id];
-    let params3 = [
-      req.body.answers[1].answer,
-      req.body.answers[1].is_correct,
-      req.body.answers[1].id,
-    ];
-    let params4 = [
-      req.body.answers[2].answer,
-      req.body.answers[2].is_correct,
-      req.body.answers[2].id,
-    ];
-    let params5 = [
-      req.body.answers[3].answer,
-      req.body.answers[3].is_correct,
-      req.body.answers[3].id,
-    ];
+    let param = [lesson_id, question, image, id];
+   const params = [];
+   req.body.answers.map((a, index) => {
+     params[index] = [a.answer, a.is_correct, a.id];
+   });
         pool
       .query(
         "Update questions Set lesson_id = $1, question = $2, image = $3 Where id = $4",
-        params[1]
+        param
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[0]
+        )
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[1]
+        )
       )
       .then(() =>
         pool.query(
@@ -326,18 +323,6 @@ app.delete("/questions/:questionId", function (req, res) {
         pool.query(
           "Update answers set answer = $1, is_correct = $2 Where id = $3",
           params[3]
-        )
-      )
-      .then(() =>
-        pool.query(
-          "Update answers set answer = $1, is_correct = $2 Where id = $3",
-          params[4]
-        )
-      )
-      .then(() =>
-        pool.query(
-          "Update answers set answer = $1, is_correct = $2 Where id = $3",
-          params[5]
         )
       )
       .then(() => res.send(`question and answers updated!`))
