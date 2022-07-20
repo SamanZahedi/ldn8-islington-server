@@ -18,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 9003;
+const port = process.env.PORT || 9002;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 // http.createServer(app).listen(app.get(port), function () {
 //   console.log("Express server listening on port " + app.get(port));
@@ -259,7 +259,7 @@ app.post("/questions", (req, res) => {
     params.push(answer.answer);
     params.push(answer.is_correct);
   });
-  console.log(params);
+  // console.log(params);
   pool
     .query(
       `with q as (Insert Into questions (lesson_id, image, question) 
@@ -287,3 +287,62 @@ app.delete("/questions/:questionId", function (req, res) {
       res.status(500).json(error);
     });
 });
+
+
+  app.put("/questions", function (req, res) {
+    let { lesson_id, image, question, id } = req.body;
+    let params1 = [lesson_id, question, image, id];
+        let params2 = [
+      req.body.answers[0].answer,
+      req.body.answers[0].is_correct,
+      req.body.answers[0].id];
+    let params3 = [
+      req.body.answers[1].answer,
+      req.body.answers[1].is_correct,
+      req.body.answers[1].id,
+    ];
+    let params4 = [
+      req.body.answers[2].answer,
+      req.body.answers[2].is_correct,
+      req.body.answers[2].id,
+    ];
+    let params5 = [
+      req.body.answers[3].answer,
+      req.body.answers[3].is_correct,
+      req.body.answers[3].id,
+    ];
+        pool
+      .query(
+        "Update questions Set lesson_id = $1, question = $2, image = $3 Where id = $4",
+        params[1]
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[2]
+        )
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[3]
+        )
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[4]
+        )
+      )
+      .then(() =>
+        pool.query(
+          "Update answers set answer = $1, is_correct = $2 Where id = $3",
+          params[5]
+        )
+      )
+      .then(() => res.send(`question and answers updated!`))
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json(error);
+      });
+  });
