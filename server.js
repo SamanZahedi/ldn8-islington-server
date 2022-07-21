@@ -1,15 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
-// var http = require("http");
-// var enforce = require("express-sslify");
+const express_enforces_ssl = require("express-enforces-ssl");
 
 const app = express();
-// app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 
 app.use(express.json());
 app.use(cors());
+if (process.env.ENV == "HeroKu") {
+  app.use(express_enforces_ssl());
+}
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -18,11 +19,8 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 9002;
+const port = process.env.PORT || 9003;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
-// http.createServer(app).listen(app.get(port), function () {
-//   console.log("Express server listening on port " + app.get(port));
-// });
 
 
 app.get("/", (req, res) => {
@@ -331,3 +329,4 @@ app.delete("/questions/:questionId", function (req, res) {
         res.status(500).json(error);
       });
   });
+
