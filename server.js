@@ -95,50 +95,78 @@ app.get("/questions/:questionId", (req, res) => {
 // });
 
 // Questions combined with answers for different lessonId
+// app.get("/questions/lessons/:lessonId", (req, res) => {
+//   const lessonId = req.params.lessonId;
+
+//   pool
+//     .query(
+//       `
+// select questions.id, image, question,  answers.id as answer_id, answer, is_correct, lesson_id
+// From questions
+// Inner join answers on question_id = questions.id
+// Where lesson_id = $1`,
+//       [lessonId]
+//     )
+//     .then((result) => {
+//       const arr = [];
+//       let obj = {};
+//       let q_id_old = 0;
+//       result.rows.map((el) => {
+//         if (el.id != q_id_old) {
+//           q_id_old = el.id;
+//           // console.log(obj);
+//           if (Object.keys(obj).length !== 0) {
+//             arr.push(obj);
+//           }
+//           obj = {
+//             id: el.id,
+//             question: el.question,
+//             image: el.image,
+//           };
+//           obj["answers"] = [];
+//           obj.answers.push({
+//             id: el.answer_id,
+//             answer: el.answer,
+//             is_correct: el.is_correct,
+//           });
+//         } else {
+//           obj.answers.push({
+//             id: el.answer_id,
+//             answer: el.answer,
+//             is_correct: el.is_correct,
+//           });
+//         }
+//       });
+//       arr.push(obj);
+//       // console.log(arr);
+//       res.json(arr);
+//     });
+// });
+
+// Questions combined with answers for different lessonId
 app.get("/questions/lessons/:lessonId", (req, res) => {
   const lessonId = req.params.lessonId;
 
   pool
     .query(
       `
-select questions.id, image, question,  answers.id as answer_id, answer, is_correct, lesson_id
+select questions.id, image, question
 From questions
-Inner join answers on question_id = questions.id
 Where lesson_id = $1`,
       [lessonId]
     )
-    .then((result) => {
+    .then(async (result) => {
       const arr = [];
-      let obj = {};
-      let q_id_old = 0;
-      result.rows.map((el) => {
-        if (el.id != q_id_old) {
-          q_id_old = el.id;
-          // console.log(obj);
-          if (Object.keys(obj).length !== 0) {
-            arr.push(obj);
-          }
-          obj = {
-            id: el.id,
-            question: el.question,
-            image: el.image,
-          };
-          obj["answers"] = [];
-          obj.answers.push({
-            id: el.answer_id,
-            answer: el.answer,
-            is_correct: el.is_correct,
-          });
-        } else {
-          obj.answers.push({
-            id: el.answer_id,
-            answer: el.answer,
-            is_correct: el.is_correct,
-          });
-        }
-      });
-      arr.push(obj);
-      // console.log(arr);
+
+      for (question of result.rows) {
+        console.log("id", question.id);
+        const asnwerResults = await pool.query(
+          `select id, is_correct, answer from answers where question_id = $1`,
+          [question.id]
+        );
+        question["answers"] = asnwerResults.rows;
+        arr.push(question);
+      }
       res.json(arr);
     });
 });
