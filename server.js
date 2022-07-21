@@ -1,16 +1,17 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
-const express_enforces_ssl = require("express-enforces-ssl");
+// const express_enforces_ssl = require("express-enforces-ssl");
 
 const app = express();
 
 
 app.use(express.json());
 app.use(cors());
-if (process.env.ENV == "HeroKu") {
-  app.use(express_enforces_ssl());
-}
+// console.log("inf",process.env.ENV);
+// if (process.env.ENV == "HeroKu") {
+//   app.use(express_enforces_ssl());
+// }
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
