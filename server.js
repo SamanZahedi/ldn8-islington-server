@@ -8,6 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+console.log("inf",process.env.ENV);
 if (process.env.ENV == "HeroKu") {
   app.use(express_enforces_ssl());
 }
