@@ -183,3 +183,17 @@ app.put("/questions", function (req, res) {
       res.status(500).json(error);
     });
 });
+
+
+app.put("/lessons/:lessonId", (req, res) => {
+  const id = req.params.lessonId;
+  const { title, img_url, intro, summary, content, video_url } = req.body;
+  pool
+    .query(
+      `Update lessons Set title = $1, img_url= $2, intro= $3, summary = $4, content = $5, video_url = $6
+        Where id = $7`,
+      [title, img_url, intro, summary, content, video_url, id]
+    )
+    .then(() => res.status(200).send("Lesson updated."))
+    .catch((error) => res.status(500).json(error));
+});
