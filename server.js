@@ -55,6 +55,14 @@ Where lesson_id = $1`,
 });
 
 //Lessons
+app.get("/lessons/:lessonId", (req, res) => {
+  const id = req.params.lessonId;
+  pool
+    .query(`select * from lessons where id = $1`, [id])
+    .then((result) => res.status(200).json(result.rows))
+    .catch((error) => res.status(500).json(error));
+});
+
 app.get("/lessons", (req, res) => {
   pool
     .query(`select * from lessons order by id`)
@@ -184,11 +192,3 @@ app.put("/questions", function (req, res) {
     });
 });
 
-
-app.get("/lessons/:lessonId", (req, res) => {
-  const id = req.params.lessonId;
-  pool
-    .query(`select * from lessons where id = $1`, [id])
-    .then((result) => res.status(200).json(result.rows))
-    .catch((error) => res.status(500).json(error));
-});
