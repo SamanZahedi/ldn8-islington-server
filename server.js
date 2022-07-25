@@ -6,6 +6,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+// console.log("inf",process.env.ENV);
+// if (process.env.ENV == "HeroKu") {
+//   app.use(express_enforces_ssl());
+// }
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -14,7 +18,7 @@ const pool = new Pool({
   },
 });
 
-const port = process.env.PORT || 9002;
+const port = process.env.PORT || 9003;
 app.listen(port, console.log(`Server is listening on port ${port}...`));
 
 app.get("/", (req, res) => {
