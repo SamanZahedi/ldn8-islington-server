@@ -1,13 +1,13 @@
 # ldn8-islington-server
 
-##Setup
+## Setup
 
-###Run in terminal to set up Heroku:
+### Run in terminal to set up Heroku:
 
-Here is the [Link on Heroku](https://ldn8-islington.herokuapp.com) to access Heroku
+Use this [Link](https://ldn8-islington.herokuapp.com) to access Heroku and you can use all the end points in `server.js` 
 
 
-###Run in terminal to set up Heroku:
+### Run in terminal to set up Heroku:
 `heroku config:set ENV="HeroKu" -a ldn8-islington`
 
 
