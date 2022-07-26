@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS student_answers;
 DROP TABLE IF EXISTS answers;
 DROP TABLE IF EXISTS questions;
 DROP TABLE if EXISTS exams;
-DROP TABLE IF EXISTS difficulty;
+-- DROP TABLE IF EXISTS difficulty;
 DROP TABLE if EXISTS lessons;
 DROP TABLE if EXISTS students;
 
@@ -32,10 +32,10 @@ Create Table lessons (
 
 
 
-CREATE TABLE difficulty (
-  id       SERIAL PRIMARY KEY,
-  type     VARCHAR(10) NOT NULL
-);
+-- CREATE TABLE difficulty (
+--   id       SERIAL PRIMARY KEY,
+--   type     VARCHAR(10) NOT NULL
+-- );
 
 CREATE TABLE exams (
     id     SERIAL PRIMARY KEY,
@@ -109,7 +109,7 @@ Insert Into lessons (title, img_url, intro, summary, content, video_url, rating)
 
 INSERT INTO students (name) VALUES ('Adam Smith'),('John Dope'),('Carolin Garcia'),('Leila Fernandez');
 
-INSERT INTO difficulty (type) VALUES ('Easy'),('Medium'), ('Hard');
+-- INSERT INTO difficulty (type) VALUES ('Easy'),('Medium'), ('Hard');
 
 INSERT INTO exams (name, lesson_id, difficulty_id) VALUES ('English', 1, 1),('English', 1, 2), ('English', 1, 3);
 
