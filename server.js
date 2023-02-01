@@ -6,16 +6,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-// console.log("inf",process.env.ENV);
-// if (process.env.ENV == "HeroKu") {
-//   app.use(express_enforces_ssl());
-// }
+
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  user: "rahwaghebremichael",
+  host: "localhost",
+  database: "islington",
+  password: "",
+  port: 5432,
 });
 
 const port = process.env.PORT || 9003;
@@ -113,7 +111,7 @@ app.delete("/lessons/:lessonId", (req, res) => {
 });
 
 //Answers
-// Question and asnwers all in one
+// Question and answers all in one
 app.post("/questions", (req, res) => {
   const { lesson_id, image, question } = req.body;
   const params = [lesson_id, image, question];
